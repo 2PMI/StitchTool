@@ -43,10 +43,10 @@ class StitchTool:
         # bg = 7000
         for i in range(src.shape[0]):
             raw = src[i,:,:]
-            raw = 50*((raw-bg)/(flat-bg))
+            raw = 50*((raw-bg)/(flat-bg))   # why 50?
             src[i,:,:] = raw
            
-
+        # 这样映射合适吗？
         src = src-src.min()
         src = src/(src.max()/65535.0)*0.8
         src = src.astype(np.uint16)

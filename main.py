@@ -30,10 +30,6 @@ class GUI(QMainWindow):
         super(GUI, self).__init__()
         uic.loadUi("./assets/main.ui", self)   # 以文件形式加载ui界面
         
-
-
-
-
         self.img_list = []
         #self.openImg.triggered.connect(self.open_image)
         self.button_openimg_stitch.clicked.connect(self.open_image_stitch)
@@ -175,20 +171,17 @@ class GUI(QMainWindow):
                 self.flat_folder[folder_name] = {'flat':flat_path,'bg':bg_path}
                 self.combo_flat_name.addItem(folder_name)
     
-       
-
-
     def set_gaussion(self):
         self.denoise_func = 'gaussian'
         self.frame_change()
+
     def set_mean(self):
         self.denoise_func = 'mean'
         self.frame_change()
+
     def set_median(self):
         self.denoise_func = 'median'
         self.frame_change()
-
-
 
     def plot(self,img):
         """
@@ -226,14 +219,6 @@ class GUI(QMainWindow):
         img = np.array(r_image)
         # 显示图片
         self.plot(img)
-
-
- 
-        
-
-
-
-
 
 
 if __name__ == '__main__':
