@@ -10,6 +10,7 @@ from pystackreg import StackReg
 
 import time
 from .flat_estimate import FlatEstimate
+from .naive_estimate import NaiveEstimate
 
 
 class StitchTool:
@@ -18,13 +19,15 @@ class StitchTool:
         self.bg = bg
         self.sr = StackReg(StackReg.RIGID_BODY)
         self.flat_estimate = FlatEstimate()
+        self.naive_estimate = NaiveEstimate()
 
     def set_flat(self, flat_info):
         self.flat_info = flat_info
 
     def correct(self, src, bias):
         if "estimate" in self.flat_info:
-            flat, bg = self.flat_estimate(src)
+            # flat, bg = self.flat_estimate(src)
+            flat, bg = self.naive_estimate(src)
         elif self.flat_info["flat"] is None:
             return src
         else:

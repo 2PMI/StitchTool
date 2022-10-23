@@ -180,7 +180,7 @@ class GUI(QMainWindow):
         folder_names = os.listdir(root)
         self.flat_folder = {
             "None": {"flat": None, "bg": None},
-            "Estimate": {"estimate"},
+            "Estimate": {"estimate", "naive_estimate"},
         }
         for folder_name in folder_names:
             folder_path = os.path.join(root, folder_name)
