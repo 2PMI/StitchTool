@@ -174,8 +174,9 @@ class GUI(QMainWindow):
             if os.path.isfile(flat_path) and os.path.exists(bg_path):
                 self.flat_folder[folder_name] = {'flat':flat_path,'bg':bg_path}
                 self.combo_flat_name.addItem(folder_name)
-    
-       
+
+        self.flat_folder['Estimate2'] = {'estimate2'}
+        self.combo_flat_name.addItem('Estimate2')
 
 
     def set_gaussion(self):
