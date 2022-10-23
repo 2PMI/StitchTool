@@ -35,16 +35,26 @@ class NaiveEstimate:
         return flat, bg
 
     def LCoV_evaluate(self, distortion_img):
-        LCoV_sum = 0
-        radius = self.window_radius
-        # print(distortion_img)
-        for i in range(distortion_img.shape[0]):
-            for j in range(distortion_img.shape[1]):
-                startX = max(0, i - radius)
-                endX = min(distortion_img.shape[0], i + radius + 1)
-                startY = max(0, j - radius)
-                endY = min(distortion_img.shape[1], j + radius + 1)
-                sub_img = distortion_img[startX:endX, startY:endY]
-                LCoV_sum += sub_img.std() / sub_img.mean()
+        cols = im2col(distortion_img, kernel_size= self.window_radius, stride=1)
+        LCoV_sum = np.sum(np.std(cols, axis=1) / np.mean(cols, axis=1))
 
         return LCoV_sum
+
+
+def im2col(img, kernel_size, stride=1):
+    pad = (kernel_size-1)//2    # 默认stride为1
+
+    H, W = img.shape
+    out_h = (H + 2*pad - kernel_size)//stride + 1
+    out_w = (W + 2*pad - kernel_size)//stride + 1
+
+    img = np.pad(img, [(pad, pad), (pad, pad)], 'edge')  # padding部分的mean、std是有影响的，是否需要单独拉出来算？
+    col = np.zeros((kernel_size, kernel_size, out_h, out_w))
+
+    for y in range(kernel_size):
+        y_max = y + stride*out_h
+        for x in range(kernel_size):
+            x_max = x + stride*out_w
+            col[y, x, :, :] = img[y:y_max:stride, x:x_max:stride]
+    col = col.transpose(2, 3, 0, 1).reshape(out_h*out_w, -1)
+    return col
