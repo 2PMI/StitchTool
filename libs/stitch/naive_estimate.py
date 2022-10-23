@@ -7,7 +7,7 @@ class NaiveEstimate:
     # windows size is recommended to be an odd number
     def __init__(self, debug=False, window_size=5) -> None:
         self.debug = debug
-        self.window_radius = window_size // 2
+        self.window_size = window_size
 
     def __call__(self, img_stack):
         # pixel-wise sort, reverse order
@@ -35,26 +35,28 @@ class NaiveEstimate:
         return flat, bg
 
     def LCoV_evaluate(self, distortion_img):
-        cols = im2col(distortion_img, kernel_size= self.window_radius, stride=1)
+        cols = im2col(distortion_img, kernel_size=self.window_size, stride=1)
         LCoV_sum = np.sum(np.std(cols, axis=1) / np.mean(cols, axis=1))
 
         return LCoV_sum
 
 
 def im2col(img, kernel_size, stride=1):
-    pad = (kernel_size-1)//2    # 默认stride为1
+    pad = (kernel_size - 1) // 2  # 默认stride为1
 
     H, W = img.shape
-    out_h = (H + 2*pad - kernel_size)//stride + 1
-    out_w = (W + 2*pad - kernel_size)//stride + 1
+    out_h = (H + 2 * pad - kernel_size) // stride + 1
+    out_w = (W + 2 * pad - kernel_size) // stride + 1
 
-    img = np.pad(img, [(pad, pad), (pad, pad)], 'edge')  # padding部分的mean、std是有影响的，是否需要单独拉出来算？
+    img = np.pad(
+        img, [(pad, pad), (pad, pad)], "edge"
+    )  # padding部分的mean、std是有影响的，是否需要单独拉出来算？
     col = np.zeros((kernel_size, kernel_size, out_h, out_w))
 
     for y in range(kernel_size):
-        y_max = y + stride*out_h
+        y_max = y + stride * out_h
         for x in range(kernel_size):
-            x_max = x + stride*out_w
+            x_max = x + stride * out_w
             col[y, x, :, :] = img[y:y_max:stride, x:x_max:stride]
-    col = col.transpose(2, 3, 0, 1).reshape(out_h*out_w, -1)
+    col = col.transpose(2, 3, 0, 1).reshape(out_h * out_w, -1)
     return col
