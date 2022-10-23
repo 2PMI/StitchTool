@@ -28,7 +28,7 @@ class StitchTool:
         if "estimate" in self.flat_info:
             flat, bg = self.flat_estimate(src)
         elif "estimate2" in self.flat_info:
-            assert False, "add code here"
+            flat, bg = self.naive_estimate(src)
         elif self.flat_info["flat"] is None:
             return src
         else:
