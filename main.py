@@ -180,7 +180,7 @@ class GUI(QMainWindow):
         folder_names = os.listdir(root)
         self.flat_folder = {
             "None": {"flat": None, "bg": None},
-            "Estimate": {"estimate", "naive_estimate"},
+            "Estimate": {"estimate"},
         }
         for folder_name in folder_names:
             folder_path = os.path.join(root, folder_name)
@@ -189,6 +189,9 @@ class GUI(QMainWindow):
             if os.path.isfile(flat_path) and os.path.exists(bg_path):
                 self.flat_folder[folder_name] = {"flat": flat_path, "bg": bg_path}
                 self.combo_flat_name.addItem(folder_name)
+
+        self.flat_folder["Estimate2"] = {"estimate2"}
+        self.combo_flat_name.addItem("Estimate2")
 
     def set_gaussion(self):
         self.denoise_func = "gaussian"

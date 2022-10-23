@@ -26,8 +26,9 @@ class StitchTool:
 
     def correct(self, src, bias):
         if "estimate" in self.flat_info:
-            # flat, bg = self.flat_estimate(src)
-            flat, bg = self.naive_estimate(src)
+            flat, bg = self.flat_estimate(src)
+        elif "estimate2" in self.flat_info:
+            assert False, "add code here"
         elif self.flat_info["flat"] is None:
             return src
         else:
