@@ -46,7 +46,7 @@ class StitchTool:
         # bg = 7000
         for i in range(src.shape[0]):
             raw = src[i, :, :]
-            raw = 50 * ((raw - bg) / (flat - bg))  # why 50?
+            raw = 50 * ((raw - bg) / (flat))  # why 50?
             src[i, :, :] = raw
 
         # 这样映射合适吗？
