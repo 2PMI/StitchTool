@@ -24,9 +24,9 @@ class StitchTool:
     def set_flat(self, flat_info):
         self.flat_info = flat_info
 
-    def correct(self, src, bias):
+    def correct(self, src, bias=0):
         if "estimate" in self.flat_info:
-            flat, bg = self.flat_estimate(src)
+            flat, bg = self.flat_estimate(src, bias)
         elif "estimate2" in self.flat_info:
             flat, bg = self.naive_estimate(src)
         elif self.flat_info["flat"] is None:
@@ -34,11 +34,6 @@ class StitchTool:
         else:
             flat = io.imread(self.flat_info["flat"])
             bg = io.imread(self.flat_info["bg"])
-
-        if bias != 0:
-            flat_sum = flat + bg
-            bg = flat_sum.min() - 10 - bias
-            flat = flat_sum - bg
 
         print("---- bg max/min: {:.2f}, {:.2f}".format(bg.max(), bg.min()))
         print("---- flat max/min: {:.2f}, {:.2f}".format(flat.max(), flat.min()))
@@ -52,7 +47,6 @@ class StitchTool:
             raw = 50 * ((raw - bg) / (flat))  # why 50?
             src[i, :, :] = raw
 
-        # 这样映射合适吗？
         src = src - src.min()
         src = src / (src.max() / 65535.0) * 0.8
         src = src.astype(np.uint16)
