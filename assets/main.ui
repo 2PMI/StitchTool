@@ -553,7 +553,7 @@
        </font>
       </property>
       <property name="text">
-       <string>5</string>
+       <string>20</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="line_grid1">
@@ -571,7 +571,7 @@
        </font>
       </property>
       <property name="text">
-       <string>11</string>
+       <string>10</string>
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox">
@@ -642,7 +642,7 @@
         </font>
        </property>
        <property name="text">
-        <string>10</string>
+        <string>0</string>
        </property>
       </widget>
      </widget>
@@ -679,7 +679,7 @@
        </font>
       </property>
       <property name="text">
-       <string>12</string>
+       <string>10</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
