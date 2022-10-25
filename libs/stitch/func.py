@@ -36,9 +36,12 @@ class StitchTool:
             bg = io.imread(self.flat_info["bg"])
 
         if bias != 0:
-            bg = flat.min() - 10 - bias
-        print("---- bg max/min:", bg.max(), bg.min())
-        print("---- flat max/min:", flat.max(), flat.min())
+            flat_sum = flat + bg
+            bg = flat_sum.min() - 10 - bias
+            flat = flat_sum - bg
+
+        print("---- bg max/min: {:.2f}, {:.2f}".format(bg.max(), bg.min()))
+        print("---- flat max/min: {:.2f}, {:.2f}".format(flat.max(), flat.min()))
 
         flat = flat.astype(np.float32)
         src = src.astype(np.float32)
