@@ -11,7 +11,7 @@ class NaiveEstimate:
 
     def __call__(self, img_stack):
         # pixel-wise sort, reverse order
-        reconstructed_imgs = np.sort(img_stack.T, axis=2).T[::-1]
+        reconstructed_imgs = np.sort(img_stack.T, axis=2).T[::-1].astype(np.float64)
 
         # debug 展示
         if self.debug:
@@ -26,16 +26,39 @@ class NaiveEstimate:
         bgs.sort(key=lambda x: x[1])
         bg = bgs[0][0]
 
+        # 亮度阈值为：不超过当前最暗的合成图的最亮的像素值亮度的0.05%
+        intensity_threshold = np.max(bgs[0][0]) * (1.0 + 0.005)
+
+        valid_bgs = []
+        for img, _ in bgs[:6]:
+            if img.max() < intensity_threshold:
+                valid_bgs.append(img)
+
+        bg = sum(valid_bgs) / len(valid_bgs)
+
+        # print("intentisy threshold:", intensity_threshold)
+        # print("valid bg num:", len(valid_bgs))
+
         for img in reconstructed_imgs[:10]:  # 只取前10张图，找其中最平滑的
             img -= bg
             distortions.append([img, self.LCoV_evaluate(img)])
 
+        # 平滑度阈值不超过最低的 0.5%
         distortions.sort(key=lambda x: x[1])
         flat = distortions[0][0]
+        LCoV_threshold = distortions[0][1] * (1.0 + 0.005)
 
-        io.imsave("flat.tif", distortions[0][0].astype(np.uint16))
+        valid_flat = []
+        for img, LCoV_score in distortions[:6]:
+            if LCoV_score < LCoV_threshold:
+                valid_flat.append(img)
+
+        flat = sum(valid_flat) / len(valid_flat)
+
+        # io.imsave("flat.tif", distortions[0][0].astype(np.uint16))
         # TODO:数学推导模拟
-        # flat, bg = gaussian_filter(flat, sigma=50, mode='nearest'), gaussian_filter(bg, sigma=50, mode='nearest')
+        flat = gaussian_filter(flat, sigma=10, mode="nearest")
+        bg = gaussian_filter(bg, sigma=10, mode="nearest")
 
         return flat, bg
 
