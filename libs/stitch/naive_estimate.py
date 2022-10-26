@@ -20,7 +20,8 @@ class NaiveEstimate:
 
         distortions, bgs = [], []
 
-        for img in reconstructed_imgs[-10:]:
+        dark_img_nums = int(reconstructed_imgs.shape[0] * 0.1)
+        for img in reconstructed_imgs[-dark_img_nums:]:
             bgs.append([img, self.LCoV_evaluate(img)])
 
         bgs.sort(key=lambda x: x[1])
@@ -29,15 +30,19 @@ class NaiveEstimate:
         intensity_threshold = np.max(bgs[0][0]) * (1.0 + 0.005)
 
         valid_bgs = []
-        for img, _ in bgs[:6]:
+        for img, _ in bgs:
             if img.max() < intensity_threshold:
                 valid_bgs.append(img)
+            else:
+                break
+
         bg = sum(valid_bgs) / len(valid_bgs)
 
         # print("intentisy threshold:", intensity_threshold)
         print("valid background numbers:", len(valid_bgs))
 
-        for img in reconstructed_imgs[:85]:  # 取前85张图，找其中最平滑的
+        bright_img_nums = int(reconstructed_imgs.shape[0] * 0.85)
+        for img in reconstructed_imgs[:bright_img_nums]:  # 取前85张图，找其中最平滑的
             img -= bg
             distortions.append([img, self.LCoV_evaluate(img)])
 
@@ -46,9 +51,11 @@ class NaiveEstimate:
         LCoV_threshold = distortions[0][1] * (1.0 + 0.005)
 
         valid_flat = []
-        for img, LCoV_score in distortions[:10]:
+        for img, LCoV_score in distortions:
             if LCoV_score < LCoV_threshold:
                 valid_flat.append(img)
+            else:
+                break
 
         flat = sum(valid_flat) / len(valid_flat)
 
