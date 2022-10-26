@@ -7,7 +7,7 @@ class FlatEstimate:
     def __init__(self, debug=False):
         self.debug = debug
 
-    def __call__(self, img_stack):
+    def __call__(self, img_stack, bias):
         # 高斯模糊并按亮度从大到小排序
         res = []
         for i in range(img_stack.shape[0]):
@@ -22,10 +22,10 @@ class FlatEstimate:
         if self.debug:
             for i in range(len(bg_res)):
                 io.imsave("bg_" + str(i) + ".tif", bg_res[i][0].astype(np.uint16))
-        bg = np.zeros((len(bg_res), 512, 512), dtype=np.uint16)
+        bg = np.zeros((len(bg_res), 512, 512), dtype=np.float32)
         for i in range(len(bg_res)):
             bg[i] = bg_res[i][0]
-        bg = np.mean(bg, axis=0).astype(np.uint16)
+        bg = np.mean(bg, axis=0).astype(np.float32)
         # io.imsave('bg.tif',bg)
 
         # res 是排好序的经过高斯模糊的图9p
@@ -42,11 +42,17 @@ class FlatEstimate:
         res = res[: len(res) // 2]
         if self.debug:
             for i in range(len(res)):
-                io.imsave("flat_" + str(i) + ".tif", res[i][0].astype(np.uint16))
-        flat = np.zeros((len(res), 512, 512), dtype=np.uint16)
+                io.imsave("flat_" + str(i) + ".tif", res[i][0].astype(np.float32))
+        flat = np.zeros((len(res), 512, 512), dtype=np.float32)
         for i in range(len(res)):
             flat[i] = res[i][0]
-        flat = np.median(flat, axis=0).astype(np.uint16)  # median? why not mean?
+        flat = np.median(flat, axis=0).astype(np.float32)  # median? why not mean?
         # flat = io.imread(r'D:\stitch/flat.tif')
         # io.imsave('flat111.tif',flat)
+
+        if bias != 0:
+            bg = flat.min() - bias - 10
+
+        flat -= bg
+
         return flat, bg

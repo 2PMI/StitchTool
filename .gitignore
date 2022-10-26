@@ -2,4 +2,4 @@ data
 *.spec
 __pycache__
 *.zip
-
+*.tif
