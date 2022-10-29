@@ -79,7 +79,14 @@ class GUI(QMainWindow):
                 self.frame_slider.setValue(0)
 
     def open_image_stitch(self):
-        openfile = QFileDialog.getExistingDirectory(None, "选择文件夹", ".")
+        default_text = self.line_imgpath_stitch.text()
+        if default_text != "":
+            openfile = QFileDialog.getExistingDirectory(
+                None, "选择文件夹", default_text + "/.."
+            )
+        else:
+            openfile = QFileDialog.getExistingDirectory(None, "选择文件夹", "../")
+
         if openfile:
             self.line_imgpath_stitch.setText(openfile)
 
