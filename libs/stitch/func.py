@@ -12,7 +12,6 @@ import pybasic
 import time
 from .flat_estimate import FlatEstimate
 from .naive_estimate import NaiveEstimate
-from .basic_estimate import BaSic_estimate
 
 
 class StitchTool:
