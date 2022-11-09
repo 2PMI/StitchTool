@@ -7,10 +7,12 @@ from scipy import ndimage
 from skimage import io
 
 from pystackreg import StackReg
+import pybasic
 
 import time
 from .flat_estimate import FlatEstimate
 from .naive_estimate import NaiveEstimate
+from .basic_estimate import BaSic_estimate
 
 
 class StitchTool:
@@ -29,6 +31,9 @@ class StitchTool:
             flat, bg = self.flat_estimate(src, bias)
         elif "estimate2" in self.flat_info:
             flat, bg = self.naive_estimate(src)
+        elif "BaSic" in self.flat_info:
+            flat, bg = pybasic.basic(src, darkfield=True)
+
         elif self.flat_info["flat"] is None:
             return src
         else:

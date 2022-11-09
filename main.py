@@ -151,10 +151,17 @@ class GUI(QMainWindow):
                 print("--- 【ERROR】:", src_path, " NOT FOUND!")
                 continue
             print(">>>> Processing ", src_path)
-            info = self.load_txt(os.path.join(target_dir, "Information.txt"))
-            img_avg_num = int(info["Frames_per_slice"])
-            grid_shape = [int(info["Vertical_Pages"]), int(info["Horizontal_Pages"])]
-            bias = float(self.line_correct_bias.text())
+            try:
+                info = self.load_txt(os.path.join(target_dir, "Information.txt"))
+                img_avg_num = int(info["Frames_per_slice"])
+                grid_shape = [
+                    int(info["Vertical_Pages"]),
+                    int(info["Horizontal_Pages"]),
+                ]
+                bias = float(self.line_correct_bias.text())
+            except:
+                print("No enough info, skip...")
+                continue
 
             # 读取光场图像
             flat_info = self.flat_folder[self.combo_flat_name.currentText()]
@@ -199,6 +206,8 @@ class GUI(QMainWindow):
 
         self.flat_folder["Estimate2"] = {"estimate2"}
         self.combo_flat_name.addItem("Estimate2")
+        self.flat_folder["BaSic"] = {"BaSic"}
+        self.combo_flat_name.addItem("BaSic")
 
     def set_gaussion(self):
         self.denoise_func = "gaussian"
