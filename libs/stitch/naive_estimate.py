@@ -41,6 +41,7 @@ class NaiveEstimate:
         # print("intentisy threshold:", intensity_threshold)
         print("valid background numbers:", len(valid_bgs))
 
+        # TODO: evaluate 相对较慢，可以考虑减少选取的图片量
         bright_img_nums = int(reconstructed_imgs.shape[0] * 0.85)
         for img in reconstructed_imgs[:bright_img_nums]:  # 取前85张图，找其中最平滑的
             img -= bg
