@@ -29,7 +29,7 @@ class StitchTool:
         if "estimate" in self.flat_info:
             flat, bg = self.flat_estimate(src, bias)
         elif "NaiveEstimate" in self.flat_info:
-            flat, bg = self.naive_estimate(src)
+            flat, bg = self.naive_estimate(src, bias)
         elif "BaSic" in self.flat_info:
             flat, bg = pybasic.basic(src, darkfield=True)
 
