@@ -12,6 +12,8 @@ import pybasic
 import time
 from .flat_estimate import FlatEstimate
 from .naive_estimate import NaiveEstimate
+from .bagging import Bagging
+from .utils import reverse_with_flat_bg
 
 
 class StitchTool:
@@ -32,6 +34,8 @@ class StitchTool:
             flat, bg = self.naive_estimate(src, bias)
         elif "BaSic" in self.flat_info:
             flat, bg = pybasic.basic(src, darkfield=True)
+        elif "Bagging" in self.flat_info:
+            return Bagging(src, bias)
 
         elif self.flat_info["flat"] is None:
             return src
@@ -39,20 +43,7 @@ class StitchTool:
             flat = io.imread(self.flat_info["flat"])
             bg = io.imread(self.flat_info["bg"])
 
-        print("---- bg max/min: {:.2f}, {:.2f}".format(bg.max(), bg.min()))
-        print("---- flat max/min: {:.2f}, {:.2f}".format(flat.max(), flat.min()))
-
-        flat = flat.astype(np.float32)
-        src = src.astype(np.float32)
-
-        # bg = 7000
-        for i in range(src.shape[0]):
-            raw = src[i, :, :]
-            raw = 50 * ((raw - bg) / (flat))  # why 50?
-            src[i, :, :] = raw
-
-        src = src - src.min()
-        src = src / (src.max() / 65535.0) * 0.8
+        src = reverse_with_flat_bg(src, flat, bg)
         src = src.astype(np.uint16)
         return src
 
