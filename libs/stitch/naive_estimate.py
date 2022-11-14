@@ -9,7 +9,12 @@ class NaiveEstimate:
         self.debug = debug
         self.window_size = window_size
 
-    def __call__(self, img_stack):
+    def __call__(self, img_stack, pre_gaussian_filter_sigma=1):
+        # gaussian filter
+        if pre_gaussian_filter_sigma > 0:
+            img_stack = gaussian_filter(img_stack, sigma=pre_gaussian_filter_sigma)
+            print("gaussian filter sigma={:.1f} done".format(pre_gaussian_filter_sigma))
+
         # pixel-wise sort, reverse order
         reconstructed_imgs = np.sort(img_stack.T, axis=2).T[::-1].astype(np.float64)
 
@@ -20,41 +25,78 @@ class NaiveEstimate:
 
         distortions, bgs = [], []
 
+        # TODO:后续可以考虑在平滑度和亮度间做一个更好的决策,比如加权得分排序之类的；或者在最平滑的中选最暗的？
         dark_img_nums = int(reconstructed_imgs.shape[0] * 0.1)
-        for img in reconstructed_imgs[-dark_img_nums:]:
-            bgs.append([img, self.LCoV_evaluate(img)])
+        for i, img in enumerate(reconstructed_imgs[-dark_img_nums:][::-1]):
+            bgs.append([img, self.LCoV_evaluate(img), i])
 
         bgs.sort(key=lambda x: x[1])
+        LCoV_threshold = bgs[0][1] * (1.0 + 0.005)
 
-        # 亮度阈值为：不超过当前最暗的合成图的最亮的像素值亮度的0.05%
-        intensity_threshold = np.max(bgs[0][0]) * (1.0 + 0.005)
-
+        max_percentage = 0.0
+        min_percentage = 1.0
         valid_bgs = []
-        for img, _ in bgs:
-            if img.max() < intensity_threshold:
+        for img, LCoV_score, index in bgs:
+            if LCoV_score < LCoV_threshold:
                 valid_bgs.append(img)
+                max_percentage = max(
+                    max_percentage,
+                    (len(reconstructed_imgs) - index) / len(reconstructed_imgs),
+                )
+                min_percentage = min(
+                    min_percentage,
+                    (len(reconstructed_imgs) - index) / len(reconstructed_imgs),
+                )
+                print(
+                    "Original image index percentage:{:.2f}".format(
+                        index / len(reconstructed_imgs)
+                    )
+                )
             else:
+                print("max percentage: {:.2f}".format(max_percentage))
+                print("min percentage: {:.2f}".format(min_percentage))
                 break
 
         bg = sum(valid_bgs) / len(valid_bgs)
+        darkest_mean_intensity = reconstructed_imgs[-1].mean()
+        bg_mean_intensity = bg.mean()
 
+        print(
+            "intensity gap: {:.2f}".format(bg_mean_intensity - darkest_mean_intensity)
+        )
         # print("intentisy threshold:", intensity_threshold)
         print("valid background numbers:", len(valid_bgs))
 
-        bright_img_nums = int(reconstructed_imgs.shape[0] * 0.85)
-        for img in reconstructed_imgs[:bright_img_nums]:  # 取前85张图，找其中最平滑的
+        # 仅选择最后一个图像作为背景
+        # bg = reconstructed_imgs[-1]
+
+        # TODO: evaluate 相对较慢，可以考虑减少选取的图片量
+        # 现在通过实验发现大部分最优点都在30%之前，只有极少数的会出现在前50%
+        bright_img_nums = int(reconstructed_imgs.shape[0] * 0.50)
+        for i, img in enumerate(reconstructed_imgs[:bright_img_nums]):  # 取前85张图，找其中最平滑的
             img -= bg
-            distortions.append([img, self.LCoV_evaluate(img)])
+            distortions.append([img, self.LCoV_evaluate(img), i])
 
         # 平滑度阈值不超过最低的 0.5%
         distortions.sort(key=lambda x: x[1])
         LCoV_threshold = distortions[0][1] * (1.0 + 0.005)
 
+        max_percentage = 0.0
+        min_percentage = 1.0
         valid_flat = []
-        for img, LCoV_score in distortions:
+        for img, LCoV_score, index in distortions:
             if LCoV_score < LCoV_threshold:
                 valid_flat.append(img)
+                max_percentage = max(max_percentage, index / len(reconstructed_imgs))
+                min_percentage = min(min_percentage, index / len(reconstructed_imgs))
+                print(
+                    "Original image index percentage:{:.2f}".format(
+                        index / len(reconstructed_imgs)
+                    )
+                )
             else:
+                print("max percentage: {:.2f}".format(max_percentage))
+                print("min percentage: {:.2f}".format(min_percentage))
                 break
 
         flat = sum(valid_flat) / len(valid_flat)

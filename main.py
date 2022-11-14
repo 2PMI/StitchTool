@@ -94,8 +94,7 @@ class GUI(QMainWindow):
         # try:
         base_dir = self.line_imgpath_stitch.text()
         print(base_dir)
-        src_path = os.path.join(base_dir, r"CellVideo/CellVideo 0.tif")
-        save_path = src_path.replace(".tif", "_stitch.tif")
+        src_path = os.path.join(base_dir, "CellVideo/CellVideo 0.tif")
         if not os.path.exists(src_path):
             print("--- 【ERROR】 没有找到tif图像！")
             return
@@ -107,6 +106,10 @@ class GUI(QMainWindow):
         flat_info = self.flat_folder[self.combo_flat_name.currentText()]
         self.stitch_tool.set_flat(flat_info)
         print("使用光场:", flat_info)
+        save_path = os.path.join(
+            base_dir, "CellVideo/CellVideo 0_{}_stitch.tif".format(list(flat_info)[0])
+        )
+
         # try:
         img_out = self.stitch_tool.stitch(
             src_path,
@@ -145,20 +148,31 @@ class GUI(QMainWindow):
             target_dir = os.path.join(base_dir, target_dir)
             if not os.path.isdir(target_dir):
                 continue
-            src_path = os.path.join(target_dir, r"CellVideo/CellVideo 0.tif")
-            save_path = src_path.replace(".tif", "_stitch.tif")
+            src_path = os.path.join(target_dir, "CellVideo/CellVideo 0.tif")
+
             if not os.path.exists(src_path):
                 print("--- 【ERROR】:", src_path, " NOT FOUND!")
                 continue
             print(">>>> Processing ", src_path)
-            info = self.load_txt(os.path.join(target_dir, "Information.txt"))
-            img_avg_num = int(info["Frames_per_slice"])
-            grid_shape = [int(info["Vertical_Pages"]), int(info["Horizontal_Pages"])]
-            bias = float(self.line_correct_bias.text())
+            try:
+                info = self.load_txt(os.path.join(target_dir, "Information.txt"))
+                img_avg_num = int(info["Frames_per_slice"])
+                grid_shape = [
+                    int(info["Vertical_Pages"]),
+                    int(info["Horizontal_Pages"]),
+                ]
+                bias = float(self.line_correct_bias.text())
+            except:
+                print("No enough info, skip...")
+                continue
 
             # 读取光场图像
             flat_info = self.flat_folder[self.combo_flat_name.currentText()]
             self.stitch_tool.set_flat(flat_info)
+            save_path = os.path.join(
+                target_dir,
+                "CellVideo/CellVideo 0_{}_stitch.tif".format(list(flat_info)[0]),
+            )
             try:
                 self.stitch_tool.stitch(
                     src_path,
@@ -188,6 +202,9 @@ class GUI(QMainWindow):
         self.flat_folder = {
             "None": {"flat": None, "bg": None},
             "Estimate": {"estimate"},
+            "NaiveEstimate": {"NaiveEstimate"},
+            "BaSic": {"BaSic"},
+            "Bagging": {"Bagging"},
         }
         for folder_name in folder_names:
             folder_path = os.path.join(root, folder_name)
@@ -197,8 +214,9 @@ class GUI(QMainWindow):
                 self.flat_folder[folder_name] = {"flat": flat_path, "bg": bg_path}
                 self.combo_flat_name.addItem(folder_name)
 
-        self.flat_folder["Estimate2"] = {"estimate2"}
-        self.combo_flat_name.addItem("Estimate2")
+        self.combo_flat_name.addItem("NaiveEstimate")
+        self.combo_flat_name.addItem("BaSic")
+        self.combo_flat_name.addItem("Bagging")
 
     def set_gaussion(self):
         self.denoise_func = "gaussian"
