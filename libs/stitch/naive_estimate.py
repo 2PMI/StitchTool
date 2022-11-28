@@ -1,4 +1,5 @@
 from scipy.ndimage import gaussian_filter
+from .utils import side_gaussian
 from skimage import io
 import numpy as np
 
@@ -9,7 +10,7 @@ class NaiveEstimate:
         self.debug = debug
         self.window_size = window_size
 
-    def __call__(self, img_stack, pre_gaussian_filter_sigma=0.5):
+    def __call__(self, img_stack, pre_gaussian_filter_sigma=0.6):
         # gaussian filter
         if pre_gaussian_filter_sigma > 0:
             img_stack = gaussian_filter(img_stack, sigma=pre_gaussian_filter_sigma)

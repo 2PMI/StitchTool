@@ -40,3 +40,9 @@ def cut_light(src, min_num=0.5, max_num=99.5):
         out.append(img)
 
     return np.array(out)
+
+
+def side_gaussian(src, sigma=0.8):
+    src[:, :, 0:50] = gaussian_filter(src[:, :, 0:50], sigma=sigma)
+    src[:, :, -50:] = gaussian_filter(src[:, :, -50:], sigma=sigma)
+    return src
