@@ -1,5 +1,4 @@
 from scipy.ndimage import gaussian_filter
-from .utils import side_gaussian
 from skimage import io
 import numpy as np
 
