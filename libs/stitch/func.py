@@ -37,6 +37,7 @@ class StitchTool:
             flat, bg = self.naive_estimate(src, bias)
         elif "BaSic" in self.flat_info:
             src = cut_light(src, max_num=95)
+            src = grid_noise_filter(src)
             flat, bg = pybasic.basic(src, darkfield=True)
         elif "Bagging" in self.flat_info:
             return Bagging(src, bias)
