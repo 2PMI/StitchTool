@@ -1,6 +1,7 @@
 import numpy as np
 import numba
 from numba import jit
+from scipy.ndimage import median_filter
 
 
 def reverse_with_flat_bg(src, flat, bg):
@@ -27,6 +28,14 @@ def grid_noise_filter(src):
         imgs_new = np.abs(imgs_new)
         out.append(imgs_new)
 
+    return np.array(out)
+
+
+def cross_signal_filter(imgs, size=5):
+    out = []
+    for img in imgs:
+        img = median_filter(img, size=size, mode="nearest")
+        out.append(img)
     return np.array(out)
 
 

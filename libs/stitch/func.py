@@ -3,6 +3,7 @@ from os import path
 
 import numpy as np
 from scipy import ndimage
+from scipy.ndimage import median_filter
 
 from skimage import io
 
@@ -13,7 +14,12 @@ import time
 from .flat_estimate import FlatEstimate
 from .naive_estimate import NaiveEstimate
 from .bagging import Bagging
-from .utils import reverse_with_flat_bg, grid_noise_filter, cut_light
+from .utils import (
+    reverse_with_flat_bg,
+    grid_noise_filter,
+    cross_signal_filter,
+    cut_light,
+)
 
 
 class StitchTool:
@@ -34,6 +40,7 @@ class StitchTool:
         elif "NaiveEstimate" in self.flat_info:
             src = cut_light(src, min_num=0.5, max_num=95)
             src = grid_noise_filter(src)
+            # src = cross_signal_filter(src, size=5)
             flat, bg = self.naive_estimate(src, bias)
         elif "BaSic" in self.flat_info:
             src = cut_light(src, max_num=95)
@@ -155,6 +162,9 @@ class StitchTool:
             output[
                 y0:y1, x0:x1
             ] = patch  # patch是float型而output是整型。请确保灰度级够大（不够大就乘个系数），否则这零点几的精度损失会带来明显的视觉差异
+
+        # 后处理中值滤波，能够去串扰
+        output = median_filter(output, size=5)
         print(">>>>  finish", save_path)
         io.imsave(save_path, output)
         return output
