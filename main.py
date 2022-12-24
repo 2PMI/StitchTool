@@ -104,6 +104,8 @@ class GUI(QMainWindow):
 
         # 读取光场图像
         flat_info = self.flat_folder[self.combo_flat_name.currentText()]
+        if flat_info == "flat":
+            flat_info = "None"
         self.stitch_tool.set_flat(flat_info)
         print("使用光场:", flat_info)
         save_path = os.path.join(

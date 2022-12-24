@@ -9,7 +9,7 @@ class NaiveEstimate:
         self.debug = debug
         self.window_size = window_size
 
-    def __call__(self, img_stack, pre_gaussian_filter_sigma=1):
+    def __call__(self, img_stack, pre_gaussian_filter_sigma=0.6):
         # gaussian filter
         if pre_gaussian_filter_sigma > 0:
             img_stack = gaussian_filter(img_stack, sigma=pre_gaussian_filter_sigma)
@@ -69,6 +69,7 @@ class NaiveEstimate:
 
         # 仅选择最后一个图像作为背景
         # bg = reconstructed_imgs[-1]
+        # print("Only choose the darkest one!")
 
         # TODO: evaluate 相对较慢，可以考虑减少选取的图片量
         # 现在通过实验发现大部分最优点都在30%之前，只有极少数的会出现在前50%
@@ -104,8 +105,10 @@ class NaiveEstimate:
         print("valid flat numbers:", len(valid_flat))
         # io.imsave("flat.tif", distortions[0][0].astype(np.uint16))
         # TODO:数学推导模拟
-        flat = gaussian_filter(flat, sigma=10, mode="nearest")
-        bg = gaussian_filter(bg, sigma=10, mode="nearest")
+
+        # past-gaussian-filter 影响不是很大，省略也可
+        # flat = gaussian_filter(flat, sigma=10, mode="nearest")
+        # bg = gaussian_filter(bg, sigma=10, mode="nearest")
 
         return flat, bg
 
