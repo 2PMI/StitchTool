@@ -164,7 +164,7 @@ class StitchTool:
             ] = patch  # patch是float型而output是整型。请确保灰度级够大（不够大就乘个系数），否则这零点几的精度损失会带来明显的视觉差异
 
         # 后处理中值滤波，能够去串扰
-        output = median_filter(output, size=5)
+        output = median_filter(output, size=3)
         print(">>>>  finish", save_path)
         io.imsave(save_path, output)
         return output
