@@ -206,7 +206,6 @@ class GUI(QMainWindow):
             "Estimate": {"estimate"},
             "NaiveEstimate": {"NaiveEstimate"},
             "BaSic": {"BaSic"},
-            "Bagging": {"Bagging"},
         }
         for folder_name in folder_names:
             folder_path = os.path.join(root, folder_name)
@@ -218,7 +217,6 @@ class GUI(QMainWindow):
 
         self.combo_flat_name.addItem("NaiveEstimate")
         self.combo_flat_name.addItem("BaSic")
-        self.combo_flat_name.addItem("Bagging")
 
     def set_gaussion(self):
         self.denoise_func = "gaussian"
