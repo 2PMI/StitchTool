@@ -8,7 +8,10 @@ from scipy.ndimage import median_filter
 from skimage import io
 
 from pystackreg import StackReg
-import pybasic
+from basicpy import BaSiC
+import jax
+
+jax.config.update("jax_platform_name", "cpu")
 
 import time
 from .flat_estimate import FlatEstimate
@@ -45,9 +48,10 @@ class StitchTool:
         elif "BaSic" in self.flat_info:
             src = cut_light(src, max_num=95)
             src = grid_noise_filter(src)
-            flat, bg = pybasic.basic(src, darkfield=True)
-        elif "Bagging" in self.flat_info:
-            return Bagging(src, bias)
+            basic = BaSiC(get_darkfield=True, smoothness_flatfield=1)
+            basic.fit(src)
+            flat, bg = basic.flatfield, basic.darkfield
+            # flat, bg = basicpy.basic(src, darkfield=True)
 
         elif self.flat_info["flat"] is None:
             # src = cut_light(src)

@@ -23,6 +23,7 @@ def read_image(img_path):
 class ROI_BOX:
     box = None
     state = 0
+
     # TODO: 模式2结束后，get_box返回的是None，虽然不会绘图但是也无法提取roi。改成不会绘图但仍旧能读取roi
     def update(self, x, y, type):
         # print(x,y,type)
@@ -103,7 +104,6 @@ class SingleShowWindow(QMainWindow):
             io.imsave(fname, self.img_normalization)
 
     def normalization(self):
-
         # print(channle_2.min(), channle_2.max())
         if self.img_roi is not None:
             roi = self.img_roi

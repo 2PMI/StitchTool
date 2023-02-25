@@ -15,6 +15,14 @@ class NaiveEstimate:
             img_stack = gaussian_filter(img_stack, sigma=pre_gaussian_filter_sigma)
             print("gaussian filter sigma={:.1f} done".format(pre_gaussian_filter_sigma))
 
+        # remove added all-zero image
+        new_img_stack = []
+        for index in range(img_stack.shape[0]):
+            img = img_stack[index]
+            if np.max(img) != 0:
+                new_img_stack.append(img)
+        img_stack = np.array(new_img_stack)
+
         # pixel-wise sort, reverse order
         reconstructed_imgs = np.sort(img_stack.T, axis=2).T[::-1].astype(np.float64)
 
