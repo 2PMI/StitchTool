@@ -25,5 +25,3 @@ python main.py
  - NaiveEstimate(Recommended): 新的光场估计方法，利用像素合成后进行估计，加入了自适应降噪，但是对于部分花纹状噪声较多的图像，即使在降噪后上下两端还是会有一定的残留影响图像质量。因此，可以选择调整`bias`，通常设为`bias=0.6`即可，如果上下边缘还是有较明显的亮线，可以再适度调大，例如`bias=1`
 
  - BaSiC: 集成 BaSiC 算法，代码详见 https://github.com/peng-lab/BaSiCPy
-
- - Bagging: 合并 BaSiC 和 NaiveEstimate 的结果，以补偿边缘的亮暗偏差，`bias` 表示 NaiveEstimate 的占比，如`bias=1` 表示最终图像仅由 NaiveEstimate 结果构成
