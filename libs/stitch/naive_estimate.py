@@ -22,7 +22,7 @@ class NaiveEstimate:
             if np.max(img) != 0:
                 new_img_stack.append(img)
         img_stack = np.array(new_img_stack)
-        
+
         # pixel-wise sort, reverse order
         reconstructed_imgs = np.sort(img_stack.T, axis=2).T[::-1].astype(np.float64)
 

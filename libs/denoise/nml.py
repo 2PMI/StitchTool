@@ -54,7 +54,6 @@ def nonLocalMeans(noisy, params=[20, 6, 14], verbose=True):
     # For each pixel in the actual image, find a area around the pixel that needs to be compared
     for imageX in range(padwidth, padwidth + image.shape[1]):
         for imageY in range(padwidth, padwidth + image.shape[0]):
-
             bWinX = imageX - padwidth
             bWinY = imageY - padwidth
 

@@ -10,7 +10,8 @@ from skimage import io
 from pystackreg import StackReg
 from basicpy import BaSiC
 import jax
-jax.config.update('jax_platform_name', 'cpu')
+
+jax.config.update("jax_platform_name", "cpu")
 
 import time
 from .flat_estimate import FlatEstimate
